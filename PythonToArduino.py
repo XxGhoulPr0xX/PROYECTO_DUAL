@@ -1,6 +1,6 @@
 import time
 # import serial  # Descomentar cuando tengas el Arduino
-from inrealtime import *
+from DetectarPorCamara import *
 
 class PythonToArduino:
     def __init__(self, puerto):

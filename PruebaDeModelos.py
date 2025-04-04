@@ -1,49 +1,56 @@
-# Importación de librerías necesarias
-import os  # Para trabajar con rutas y archivos del sistema
-from ultralytics import YOLO  # Modelo YOLO para detección de objetos
+import os  
+import cv2
+from ultralytics import YOLO  
 
-# Ruta al modelo pre-entrenado (archivo .pt)
-model_path = "C:\\Users\\XxGho\\Documents\\Escuela\\Proceso Dual\\Proyecto\\Python\\best.pt"
+class pruebaDelModelo:
+    def __init__(self,path,image):
+        self.path=path
+        self.image=image
+        self.class_labels = {
+            0: "biodegradable",
+            1: "carton",
+            2: "vidrio",
+            3: "metal",
+            4: "papel",
+            5: "plastico"
+        }
 
-# Verificación de que el modelo existe
-if not os.path.exists(model_path):
-    print(f"Error: El archivo {model_path} no existe.")
-    exit()  # Termina el programa si no encuentra el modelo
+    def comprobarSiExisteModel(self):
+        if not os.path.exists(self.path):
+            print(f"Error: El archivo {self.path} no existe.")
+            return exit()
+        
+    def comprobarSiExisteImagen(self):
+        if not os.path.exists(self.image):
+            print(f"Error: La imagen {self.image} no existe.")
+            return exit()  
 
-# Carga el modelo YOLO desde el archivo especificado
-model = YOLO(model_path)
+    def analizarImagenUsandoModelo(self):
+        self.comprobarSiExisteImagen()
+        self.comprobarSiExisteModel()
+        model = YOLO(self.path)
+        results = model(self.image)
+        return results  
 
-# Ruta a la imagen que queremos analizar
-img_path = "C:\\Users\\XxGho\\Documents\\Escuela\\Proceso Dual\\Proyecto\\trashnet-master\\data\\dataset-resized\\metal\\metal19.jpg"
-
-# Verificación de que la imagen existe
-if not os.path.exists(img_path):
-    print(f"Error: La imagen {img_path} no existe.")
-    exit()  # Termina el programa si no encuentra la imagen
-
-# Procesa la imagen con el modelo para detectar objetos
-results = model(img_path)
-
-# Procesamiento de los resultados obtenidos
-for result in results:
-    # Extrae la información de las detecciones:
-    classes = result.boxes.cls.cpu().numpy()  # Índices de las clases detectadas
-    confidences = result.boxes.conf.cpu().numpy()  # Niveles de confianza (0-1) de cada detección
+    def mostrarResultados(self):
+        results = self.analizarImagenUsandoModelo()
+        for result in results:
+            classes = result.boxes.cls.cpu().numpy()
+            confidences = result.boxes.conf.cpu().numpy()
+            for class_index, confidence in zip(classes, confidences):
+                class_label = self.class_labels.get(int(class_index), "Desconocido")
+                print(f"Clase detectada: {class_label}, Confianza: {confidence:.2f}")
+                
+            img_resultado = result.plot()
+            cv2.imshow("Resultado de la detección", img_resultado)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+        
+    def run(self):
+        return self.mostrarResultados()
     
-    # Diccionario para traducir índices numéricos a nombres de clases comprensibles
-    class_labels = {
-        0: "biodegradable",
-        1: "cardboard",
-        2: "glass",
-        3: "metal",
-        4: "paper",
-        5: "plastic"
-    }
-
-    # Muestra en consola cada objeto detectado con su clase y nivel de confianza
-    for class_index, confidence in zip(classes, confidences):
-        class_label = class_labels.get(int(class_index), "Desconocido")  # Obtiene nombre legible
-        print(f"Clase detectada: {class_label}, Confianza: {confidence:.2f}")  # Formatea la salida
-
-    # Muestra la imagen con los objetos detectados marcados (cuadros y etiquetas)
-    result.show()
+if __name__=="__main__":
+    model_path = "C:\\Users\\XxGho\\OneDrive\\Documentos\\Escuela\\Proceso Dual\\Proyecto\\Python\\Modelos\\Identificacion de objetos\\best.pt"
+    img_path = "C:\\Users\\XxGho\\OneDrive\\Documentos\\Escuela\\Proceso Dual\\Proyecto\\trashnet-master\\data\\dataset-resized\\metal\\metal23.jpg"
+    alpha=pruebaDelModelo(model_path,img_path)
+    alpha.run()
