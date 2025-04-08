@@ -3,9 +3,11 @@ import cv2
 from ultralytics import YOLO  
 
 class pruebaDelModelo:
-    def __init__(self,path,image):
-        self.path=path
-        self.image=image
+    def __init__(self, path, image, confianza):
+        self.path = path
+        self.image = image
+        self.confianza=confianza
+        self.label=""
         self.class_labels = {
             0: "biodegradable",
             1: "carton",
@@ -18,18 +20,18 @@ class pruebaDelModelo:
     def comprobarSiExisteModel(self):
         if not os.path.exists(self.path):
             print(f"Error: El archivo {self.path} no existe.")
-            return exit()
-        
+            exit()
+
     def comprobarSiExisteImagen(self):
         if not os.path.exists(self.image):
             print(f"Error: La imagen {self.image} no existe.")
-            return exit()  
+            exit()  
 
     def analizarImagenUsandoModelo(self):
         self.comprobarSiExisteImagen()
         self.comprobarSiExisteModel()
         model = YOLO(self.path)
-        results = model(self.image)
+        results = model(self.image, conf=self.confianza)
         return results  
 
     def mostrarResultados(self):
@@ -38,19 +40,24 @@ class pruebaDelModelo:
             classes = result.boxes.cls.cpu().numpy()
             confidences = result.boxes.conf.cpu().numpy()
             for class_index, confidence in zip(classes, confidences):
-                class_label = self.class_labels.get(int(class_index), "Desconocido")
-                print(f"Clase detectada: {class_label}, Confianza: {confidence:.2f}")
-                
+                if confidence >= self.confianza:
+                    class_label = self.class_labels.get(int(class_index), "Desconocido")
+                    print(f"Clase detectada: {class_label}, Confianza: {confidence:.2f}")
+                    self.label=self.class_labels.get(int(class_index), "Desconocido")
             img_resultado = result.plot()
             cv2.imshow("Resultado de la detección", img_resultado)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
+
+    def getLabelObjeto(self):
+        return self.label
         
     def run(self):
         return self.mostrarResultados()
     
-if __name__=="__main__":
-    model_path = "C:\\Users\\XxGho\\OneDrive\\Documentos\\Escuela\\Proceso Dual\\Proyecto\\Python\\Modelos\\Identificacion de objetos\\best.pt"
-    img_path = "C:\\Users\\XxGho\\OneDrive\\Documentos\\Escuela\\Proceso Dual\\Proyecto\\trashnet-master\\data\\dataset-resized\\metal\\metal23.jpg"
-    alpha=pruebaDelModelo(model_path,img_path)
+if __name__ == "__main__":
+    confianza=0.45
+    model_path = "C:\\Users\\Javier Alvarado\\Documents\\Duales\\PROYECTO_DUAL\\Modelos\\Identificacion de objetos\\best.pt"
+    img_path = "C:\\Users\\Javier Alvarado\\Documents\\Duales\\Imagenes\\dataset-resized\\metal\\metal303.jpg"
+    alpha = pruebaDelModelo(model_path, img_path, confianza)
     alpha.run()

@@ -1,5 +1,3 @@
-import time
-# import serial  # Descomentar cuando tengas el Arduino
 import cv2
 from ultralytics import YOLO
 
@@ -37,7 +35,6 @@ class ModeloCamara:
     def procesarFrame(self, frame):
         resultados = self.modelo(frame, conf=self.conf_threshold)
         detecciones = []
-        self.label = ""  # Resetear la etiqueta
         
         for resultado in resultados:
             for box, class_index, confidence in zip(
@@ -70,9 +67,9 @@ class ModeloCamara:
     def obtenerDeteccion(self):
         frame = self.capturarFrame()
         if frame is None:
-            return None
+            return "salir"
         
-        if self.frame_count % 5 == 0:  # Procesar cada 20 frames
+        if self.frame_count % 10 == 0:  # Procesar cada 20 frames
             detecciones = self.procesarFrame(frame)
             frame = self.dibujarDetecciones(frame, detecciones)
         
