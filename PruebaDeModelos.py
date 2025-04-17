@@ -41,9 +41,7 @@ class pruebaDelModelo:
             confidences = result.boxes.conf.cpu().numpy()
             for class_index, confidence in zip(classes, confidences):
                 if confidence >= self.confianza:
-                    class_label = self.class_labels.get(int(class_index), "Desconocido")
-                    print(f"Clase detectada: {class_label}, Confianza: {confidence:.2f}")
-                    self.label=self.class_labels.get(int(class_index), "Desconocido")
+                    self.label = self.class_labels.get(int(class_index), "Desconocido")
             img_resultado = result.plot()
             cv2.imshow("Resultado de la detección", img_resultado)
             cv2.waitKey(0)
@@ -57,7 +55,7 @@ class pruebaDelModelo:
     
 if __name__ == "__main__":
     confianza=0.45
-    model_path = "C:\\Users\\Javier Alvarado\\Documents\\Duales\\PROYECTO_DUAL\\Modelos\\Identificacion de objetos\\best.pt"
-    img_path = "C:\\Users\\Javier Alvarado\\Documents\\Duales\\Imagenes\\dataset-resized\\metal\\metal303.jpg"
+    model_path = "C:\\Users\\XxGho\\OneDrive\\Documentos\\Escuela\\Proceso Dual\\Proyecto\\Python\\Modelos\\Identificacion de objetos\\yoloooo.pt"
+    img_path = "C:\\Users\\XxGho\\OneDrive\\Documentos\\Escuela\\Proceso Dual\\Proyecto\\trashnet-master\\data\\dataset-resized\\metal\\metal13.jpg"
     alpha = pruebaDelModelo(model_path, img_path, confianza)
     alpha.run()

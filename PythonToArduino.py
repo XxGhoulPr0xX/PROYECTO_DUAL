@@ -1,55 +1,50 @@
-import time
-# import serial  # Descomentar cuando tengas el Arduino
-from PruebaDeModelos import *
 from conexionArduino import *
-#from DetectarPorCamara import *
+from DetectarPorCamara import *
 
 class PythonToArduino:
-    #def __init__(self,path_model,confianza):
-    def __init__(self, path,image,confianza,puerto):
-        # self.arduino = serial.Serial(puerto, 9600, timeout=1)  # Descomentar cuando uses Arduino
-        #self.alpha = ModeloCamara(path_model,confianza)
-        self.alpha=pruebaDelModelo(path,image,confianza)
-        self.charlie=conexionArduino(puerto)
-        self.clases = {
-            0: "biodegradable",
-            1: "cartón",
-            2: "vidrio",
-            3: "metal",
-            4: "papel",
-            5: "plastico"
+    def __init__(self, path_model, confianza, puerto, baudrate):
+        self.alpha = ModeloCamara(path_model, confianza)
+        self.charlie = conexionArduino(puerto, baudrate)
+        if not self.charlie.establecerConexion():
+            raise RuntimeError("No se pudo conectar al Arduino")
+
+    def mapearClaseToComando(self, clase):
+        clases = {
+            "biodegradable": ord('B'),  # 'B'
+            "carton": ord('C'),
+            "vidrio": ord('V'),
+            "metal": ord('M'),
+            "papel": ord('P'),
+            "plastico": ord('O')
         }
-        self.charlie.establecerConexion()
+        return clases.get(clase.lower())
 
-
-    def EnviarBytes(self, clase):
-        if clase not in self.clases.values():
-            print("Objeto no identificado")
+    def enviarBytes(self, comando):
+        if not self.charlie.enviarRespuesta(comando, esperar_confirmacion=True):
+            print("⚠️ Fallo en la comunicación con Arduino")
         else:
-            self.charlie.enviarRespuesta(clase)
-            time.sleep(2)  # Espera para asegurar el envío de datos
+            print("Comunicación exitosa, envio correcto de datos")
 
     def ejecutar(self):
-        self.alpha.mostrarResultados()
-        while True:
-            mensaje = self.charlie.esperandoMensaje()
-            if mensaje == "objeto detectado":
-                resultado=self.alpha.getLabelObjeto()
-                #resultado=self.alpha.obtenerDeteccion()
-                self.EnviarBytes(resultado)
-                #time.sleep(2)  # Pequeño delay para evitar spam de datos
-            else:
-                print("No se detectó ningún objeto válido.")
-                self.EnviarBytes("no_detectado")
+        try:
+            while True:
+                mensaje = self.charlie.esperandoMensaje()
+                if mensaje == "objeto detectado":
+                    resultado = input("Dame una clase: ").strip()
+                    comando = self.mapearClaseToComando(resultado)
+                    if comando is not None:
+                        self.enviarBytes(comando)
+                    else:
+                        print("❌ Clase no reconocida")
+        except KeyboardInterrupt:
+            self.charlie.cerrarConexion()
+            print("\nPrograma terminado")
 
-        #self.alpha.cap.release()
-        #cv2.destroyAllWindows()
 
 if __name__ == "__main__":
     confianza=0.45
-    model_path= "C:\\Users\\Javier Alvarado\\Documents\\Duales\\PROYECTO_DUAL\\Modelos\\Identificacion de objetos\\best.pt"
-    img_path = "C:\\Users\\Javier Alvarado\\Documents\\Duales\\Imagenes\\dataset-resized\\metal\\metal303.jpg"
+    model_path= "C:\\Users\\XxGho\\OneDrive\\Documentos\\Escuela\\Proceso Dual\\Proyecto\\Python\\Modelos\\Identificacion de objetos\\yoloooo.pt"
     com="COM3"
-    beta=PythonToArduino(model_path,img_path,confianza,com)
-    #beta=PythonToArduino(model_path,confianza)
+    serial=9600
+    beta=PythonToArduino(model_path,confianza,com,serial)
     beta.ejecutar()

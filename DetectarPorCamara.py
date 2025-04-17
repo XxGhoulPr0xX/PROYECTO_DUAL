@@ -69,9 +69,8 @@ class ModeloCamara:
         if frame is None:
             return "salir"
         
-        if self.frame_count % 10 == 0:  # Procesar cada 20 frames
-            detecciones = self.procesarFrame(frame)
-            frame = self.dibujarDetecciones(frame, detecciones)
+        detecciones = self.procesarFrame(frame)
+        frame = self.dibujarDetecciones(frame, detecciones)
         
         cv2.imshow("Cámara", frame)
         self.frame_count += 1
