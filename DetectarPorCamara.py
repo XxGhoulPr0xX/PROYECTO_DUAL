@@ -23,9 +23,13 @@ class ModeloCamara:
             5: (255, 255, 0)   
         }
         self.label = ""
-        self.frame_count = 0
+        self.pausado = False  # Nuevo estado para controlar pausa
+        self.frame_pausa = None  # Frame congelado cuando está pausado
 
     def capturarFrame(self):
+        if self.pausado:
+            return self.frame_pausa if self.frame_pausa is not None else None
+        
         ret, frame = self.cap.read()
         if not ret:
             print("Error: No se pudo capturar el frame.")
@@ -33,6 +37,8 @@ class ModeloCamara:
         return frame
 
     def procesarFrame(self, frame):
+        if self.pausado:
+            return []  # No procesar cuando está pausado
         resultados = self.modelo(frame, conf=self.conf_threshold)
         detecciones = []
         
@@ -64,18 +70,30 @@ class ModeloCamara:
                         cv2.FONT_HERSHEY_SIMPLEX, 0.9, color, 2)
         return frame
 
+    def pausar(self):
+        if not self.pausado:
+            self.pausado = True
+            self.frame_pausa = self.capturarFrame()
+            print("Cámara pausada")
+
+    def continuar(self):
+        if self.pausado:
+            self.pausado = False
+            self.frame_pausa = None
+            print("Cámara continuada")
+
     def obtenerDeteccion(self):
         frame = self.capturarFrame()
         if frame is None:
-            return "salir"
+            return "Error: No se pudo capturar el frame."
         
         detecciones = self.procesarFrame(frame)
         frame = self.dibujarDetecciones(frame, detecciones)
-        
+
         cv2.imshow("Cámara", frame)
-        self.frame_count += 1
         
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        key = cv2.waitKey(1)
+        if key & 0xFF == ord('q'):
             return "salir"
         
         return self.label

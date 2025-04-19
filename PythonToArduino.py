@@ -5,6 +5,11 @@ class PythonToArduino:
     def __init__(self, path_model, confianza, puerto, baudrate):
         self.alpha = ModeloCamara(path_model, confianza)
         self.charlie = conexionArduino(puerto, baudrate)
+        self.timeDetection=2
+        self.lastCommand=None
+        self.timeOfLastSend=0
+        self.shippingInterval=0.5
+        self.bandera=False
         if not self.charlie.establecerConexion():
             raise RuntimeError("No se pudo conectar al Arduino")
 
@@ -28,15 +33,33 @@ class PythonToArduino:
     def ejecutar(self):
         try:
             while True:
-                mensaje = self.charlie.esperandoMensaje()
-                if mensaje == "objeto detectado":
-                    resultado = input("Dame una clase: ").strip()
-                    comando = self.mapearClaseToComando(resultado)
-                    if comando is not None:
-                        self.enviarBytes(comando)
-                    else:
-                        print("❌ Clase no reconocida")
+                if self.bandera is False:
+                    mensaje = self.charlie.esperandoMensaje()
+                    if mensaje == "objeto detectado":
+                        self.bandera = True
+                        self.alpha.continuar()
+                        print("🔍 Iniciando detección...")
+                        tiempo_inicio = time.time()
+                        self.lastCommand = None  # Resetear al iniciar nueva detección
+                if self.bandera is True:
+                    resultado = self.alpha.obtenerDeteccion()
+                    if time.time() - tiempo_inicio >= self.timeDetection:
+                        self.bandera = False
+                        self.alpha.pausar()
+                        print("⏸️ Cámara pausada, esperando nuevo objeto...")
+                        continue
+                    if resultado:
+                        comando = self.mapearClaseToComando(resultado)
+                        if (comando is not None and comando != self.lastCommand and 
+                            (time.time() - self.timeOfLastSend) >= self.shippingInterval):
+                            print(f"✅ Enviado comando: {comando}")
+                            #self.enviarBytes(comando)
+                            self.lastCommand = comando
+                            self.timeOfLastSend = time.time()
+                        else:
+                            print("Resultado no enviado, el mismo objeto detectado que el anterior")
         except KeyboardInterrupt:
+            self.alpha.pausar()
             self.charlie.cerrarConexion()
             print("\nPrograma terminado")
 
