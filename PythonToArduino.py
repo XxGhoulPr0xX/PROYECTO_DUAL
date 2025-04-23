@@ -53,7 +53,7 @@ class PythonToArduino:
                         if (comando is not None and comando != self.lastCommand and 
                             (time.time() - self.timeOfLastSend) >= self.shippingInterval):
                             print(f"✅ Enviado comando: {comando}")
-                            #self.enviarBytes(comando)
+                            self.enviarBytes(comando)
                             self.lastCommand = comando
                             self.timeOfLastSend = time.time()
                         else:
@@ -65,7 +65,7 @@ class PythonToArduino:
 
 
 if __name__ == "__main__":
-    confianza=0.45
+    confianza=0.75
     model_path= "C:\\Users\\XxGho\\OneDrive\\Documentos\\Escuela\\Proceso Dual\\Proyecto\\Python\\Modelos\\Identificacion de objetos\\yoloooo.pt"
     com="COM3"
     serial=9600
