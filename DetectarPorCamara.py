@@ -14,7 +14,7 @@ class ModeloCamara:
             4: "papel",
             5: "plastico"
         }
-        
+
         self.class_colors = {
             0: (0, 0, 255),    
             1: (0, 255, 0),    

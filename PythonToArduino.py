@@ -66,7 +66,8 @@ class PythonToArduino:
 
 if __name__ == "__main__":
     confianza=0.75
-    model_path= "C:\\Users\\XxGho\\OneDrive\\Documentos\\Escuela\\Proceso Dual\\Proyecto\\Python\\Modelos\\Identificacion de objetos\\yoloooo.pt"
+    model_path = "C:\\Users\\José Luis\\Documents\\PROYECTO_DUAL-main\\PROYECTO_DUAL-main\\Modelos\\Identificacion de objetos\\yoloooo.pt"
+    img_path = "C:\\Users\\José Luis\\Documents\\PROYECTO_DUAL-main\\PROYECTO_DUAL-main\\IMG\\vi.webp"
     com="COM3"
     serial=9600
     beta=PythonToArduino(model_path,confianza,com,serial)

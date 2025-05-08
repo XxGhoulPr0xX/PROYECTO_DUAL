@@ -55,7 +55,8 @@ class pruebaDelModelo:
     
 if __name__ == "__main__":
     confianza=0.45
-    model_path = "C:\\Users\\XxGho\\OneDrive\\Documentos\\Escuela\\Proceso Dual\\Proyecto\\Python\\Modelos\\Identificacion de objetos\\yoloooo.pt"
-    img_path = "C:\\Users\\XxGho\\OneDrive\\Documentos\\Escuela\\Proceso Dual\\Proyecto\\trashnet-master\\data\\dataset-resized\\metal\\metal13.jpg"
+    model_path = "C:\\Users\\José Luis\\Documents\\PROYECTO_DUAL-main\\PROYECTO_DUAL-main\\Modelos\\Identificacion de objetos\\yoloooo.pt"
+    img_path = "C:\\Users\\José Luis\\Documents\\PROYECTO_DUAL-main\\PROYECTO_DUAL-main\\IMG\\vi.webp"
+
     alpha = pruebaDelModelo(model_path, img_path, confianza)
     alpha.run()
