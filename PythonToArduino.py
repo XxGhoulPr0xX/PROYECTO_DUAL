@@ -1,5 +1,5 @@
 from conexionArduino import *
-from DetectarPorCamara import *
+from DetectarPorCamaravCUDA import *
 
 class PythonToArduino:
     def __init__(self, path_model, confianza, puerto, baudrate):
@@ -40,7 +40,7 @@ class PythonToArduino:
                         self.alpha.continuar()
                         print("🔍 Iniciando detección...")
                         tiempo_inicio = time.time()
-                        self.lastCommand = None  # Resetear al iniciar nueva detección
+                        self.lastCommand = None
                 if self.bandera is True:
                     resultado = self.alpha.obtenerDeteccion()
                     if time.time() - tiempo_inicio >= self.timeDetection:
