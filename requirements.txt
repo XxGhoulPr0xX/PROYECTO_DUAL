@@ -30,12 +30,13 @@ scipy==1.15.2
 seaborn==0.13.2
 setuptools==78.1.0
 six==1.17.0
-sympy==1.13.1
-torch==2.6.0
-torchvision==0.21.0
+sympy==1.13.3
+torch==2.7.0+cu118
+torchaudio==2.7.0+cu118
+torchvision==0.22.0+cu118
 tqdm==4.67.1
 typing_extensions==4.13.0
 tzdata==2025.2
-ultralytics==8.3.100
+ultralytics==8.3.115
 ultralytics-thop==2.0.14
 urllib3==2.3.0
