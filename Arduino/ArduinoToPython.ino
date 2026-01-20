@@ -7,7 +7,6 @@
 #define MAX_DISTANCE 20
 #define SERVO_PIN 13
 #define MOTOR_INT1 5  // Puerto para INT1 del L298N
-#define MOTOR_INT2 7  // Puerto para INT2 del L298N
 
 NewPing sonar(TRIG_PIN, ECHO_PIN, MAX_DISTANCE);
 Servo servoMotor;
@@ -23,7 +22,6 @@ void setup() {
   
   // Configurar pines del motor como salidas
   pinMode(MOTOR_INT1, OUTPUT);
-  pinMode(MOTOR_INT2, OUTPUT);
   
   // Asegurar que el motor está detenido al inicio
   detenerMotor();
@@ -31,12 +29,10 @@ void setup() {
 
 void detenerMotor() {
   digitalWrite(MOTOR_INT1, LOW);
-  digitalWrite(MOTOR_INT2, LOW);
 }
 
 void moverMotorAdelante(unsigned int duracion) {
   digitalWrite(MOTOR_INT1, HIGH);
-  digitalWrite(MOTOR_INT2, LOW);
   delay(duracion);
   detenerMotor(); // Siempre detener después de mover
 }

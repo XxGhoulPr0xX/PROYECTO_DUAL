@@ -110,8 +110,8 @@ class ModeloCamara:
         return self.label
 
 if __name__ == "__main__":
-    confianza = 0.55
-    model_path = "C:\\Users\\XxGho\\OneDrive\\Documentos\\Escuela\\Proceso Dual\\Proyecto\\Python\\Modelos\\Identificacion de objetos\\yoloooo.pt"
+    confianza = 0.65
+    model_path = "C:\\Users\\XxGho\\OneDrive\\Documentos\\Escuela\\Proceso Dual\\Proyecto\\1° Proyecto\\Python\\Modelos\\Identificacion de objetos\\yoloooo.pt"
     alpha = ModeloCamara(model_path, confianza)
     try:
         while True:
